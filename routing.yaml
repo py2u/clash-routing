@@ -82,6 +82,28 @@ rules:
 - DOMAIN-SUFFIX,runwayml.com,🤖 AI 服务
 - DOMAIN-SUFFIX,pika.art,🤖 AI 服务
 - DOMAIN-SUFFIX,luma.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,deepmind.google,🤖 AI 服务
+- DOMAIN-SUFFIX,deepmind.com,🤖 AI 服务
+- DOMAIN-SUFFIX,windsurf.com,🤖 AI 服务
+- DOMAIN-SUFFIX,codeium.com,🤖 AI 服务
+- DOMAIN-SUFFIX,phind.com,🤖 AI 服务
+- DOMAIN-SUFFIX,you.com,🤖 AI 服务
+- DOMAIN-SUFFIX,suno.com,🤖 AI 服务
+- DOMAIN-SUFFIX,ideogram.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,leonardo.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,civitai.com,🤖 AI 服务
+- DOMAIN-SUFFIX,fal.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,replicate.com,🤖 AI 服务
+- DOMAIN-SUFFIX,stability.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,heygen.com,🤖 AI 服务
+- DOMAIN-SUFFIX,synthesia.io,🤖 AI 服务
+- DOMAIN-SUFFIX,descript.com,🤖 AI 服务
+- DOMAIN-SUFFIX,gamma.app,🤖 AI 服务
+- DOMAIN-SUFFIX,firefly.adobe.com,🤖 AI 服务
+- DOMAIN-SUFFIX,otter.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,assemblyai.com,🤖 AI 服务
+- DOMAIN-SUFFIX,deepgram.com,🤖 AI 服务
+- DOMAIN-SUFFIX,krea.ai,🤖 AI 服务
 - DOMAIN-SUFFIX,telegram.org,✈️ Telegram
 - DOMAIN-SUFFIX,t.me,✈️ Telegram
 - DOMAIN-SUFFIX,telegram.me,✈️ Telegram
