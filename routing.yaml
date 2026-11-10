@@ -78,6 +78,10 @@ rules:
 - DOMAIN-SUFFIX,githubcopilot.com,🤖 AI 服务
 - DOMAIN,notebooklm.google.com,🤖 AI 服务
 - DOMAIN,labs.google,🤖 AI 服务
+- DOMAIN-SUFFIX,meta.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,runwayml.com,🤖 AI 服务
+- DOMAIN-SUFFIX,pika.art,🤖 AI 服务
+- DOMAIN-SUFFIX,luma.ai,🤖 AI 服务
 - DOMAIN-SUFFIX,telegram.org,✈️ Telegram
 - DOMAIN-SUFFIX,t.me,✈️ Telegram
 - DOMAIN-SUFFIX,telegram.me,✈️ Telegram
@@ -100,5 +104,5 @@ rules:
 - DOMAIN-SUFFIX,twitch.tv,📺 流媒体
 - DOMAIN-SUFFIX,ttvnw.net,📺 流媒体
 - GEOSITE,cn,DIRECT
-- GEOIP,CN,DIRECT
+- GEOIP,CN,DIRECT,no-resolve
 - MATCH,♻️ 自动选择
