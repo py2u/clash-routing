@@ -1,0 +1,104 @@
+proxy-groups:
+- name: ♻️ 自动选择
+  type: url-test
+  url: http://cp.cloudflare.com/generate_204
+  interval: 300
+  tolerance: 20
+  lazy: true
+  include-all-proxies: true
+  filter: (?i)Lisa
+- name: 🎬 Reality 专线
+  type: url-test
+  url: http://cp.cloudflare.com/generate_204
+  interval: 300
+  tolerance: 20
+  lazy: true
+  include-all-proxies: true
+  filter: (?i)Reality
+- name: 🤖 AI 服务
+  type: select
+  proxies:
+  - 🎬 Reality 专线
+  - ♻️ 自动选择
+  - DIRECT
+  url: http://cp.cloudflare.com/generate_204
+  interval: 300
+- name: 📺 流媒体
+  type: select
+  proxies:
+  - ♻️ 自动选择
+  - 🎬 Reality 专线
+  - DIRECT
+  url: http://cp.cloudflare.com/generate_204
+  interval: 300
+- name: ✈️ Telegram
+  type: select
+  proxies:
+  - ♻️ 自动选择
+  - DIRECT
+  url: http://cp.cloudflare.com/generate_204
+  interval: 300
+rules:
+- GEOIP,telegram,✈️ Telegram
+- DOMAIN-SUFFIX,deepseek.com,DIRECT
+- DOMAIN-SUFFIX,deepseek.cn,DIRECT
+- DOMAIN-SUFFIX,browserleaks.com,♻️ 自动选择
+- DOMAIN-SUFFIX,dnsleaktest.com,♻️ 自动选择
+- GEOSITE,private,DIRECT
+- GEOIP,private,DIRECT,no-resolve
+- DOMAIN-SUFFIX,openai.com,🤖 AI 服务
+- DOMAIN-SUFFIX,chatgpt.com,🤖 AI 服务
+- DOMAIN-SUFFIX,chat.com,🤖 AI 服务
+- DOMAIN-SUFFIX,oaistatic.com,🤖 AI 服务
+- DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI 服务
+- DOMAIN-SUFFIX,sora.com,🤖 AI 服务
+- DOMAIN-SUFFIX,anthropic.com,🤖 AI 服务
+- DOMAIN-SUFFIX,claude.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI 服务
+- DOMAIN,gemini.google.com,🤖 AI 服务
+- DOMAIN,bard.google.com,🤖 AI 服务
+- DOMAIN,generativelanguage.googleapis.com,🤖 AI 服务
+- DOMAIN,aistudio.google.com,🤖 AI 服务
+- DOMAIN-SUFFIX,perplexity.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,poe.com,🤖 AI 服务
+- DOMAIN-SUFFIX,midjourney.com,🤖 AI 服务
+- DOMAIN-SUFFIX,huggingface.co,🤖 AI 服务
+- DOMAIN-SUFFIX,groq.com,🤖 AI 服务
+- DOMAIN-SUFFIX,x.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,cursor.com,🤖 AI 服务
+- DOMAIN-SUFFIX,cursor.sh,🤖 AI 服务
+- DOMAIN-SUFFIX,openrouter.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,together.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,mistral.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,cohere.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,character.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,elevenlabs.io,🤖 AI 服务
+- DOMAIN-SUFFIX,copilot.microsoft.com,🤖 AI 服务
+- DOMAIN-SUFFIX,grok.com,🤖 AI 服务
+- DOMAIN-SUFFIX,githubcopilot.com,🤖 AI 服务
+- DOMAIN,notebooklm.google.com,🤖 AI 服务
+- DOMAIN,labs.google,🤖 AI 服务
+- DOMAIN-SUFFIX,telegram.org,✈️ Telegram
+- DOMAIN-SUFFIX,t.me,✈️ Telegram
+- DOMAIN-SUFFIX,telegram.me,✈️ Telegram
+- DOMAIN-SUFFIX,telesco.pe,✈️ Telegram
+- DOMAIN-SUFFIX,telegra.ph,✈️ Telegram
+- DOMAIN-SUFFIX,netflix.com,📺 流媒体
+- DOMAIN-SUFFIX,nflxvideo.net,📺 流媒体
+- DOMAIN-SUFFIX,nflxso.net,📺 流媒体
+- DOMAIN-SUFFIX,disneyplus.com,📺 流媒体
+- DOMAIN-SUFFIX,hulu.com,📺 流媒体
+- DOMAIN-SUFFIX,hbomax.com,📺 流媒体
+- DOMAIN-SUFFIX,max.com,📺 流媒体
+- DOMAIN-SUFFIX,primevideo.com,📺 流媒体
+- DOMAIN-SUFFIX,spotify.com,📺 流媒体
+- DOMAIN-SUFFIX,scdn.co,📺 流媒体
+- DOMAIN-SUFFIX,youtube.com,📺 流媒体
+- DOMAIN-SUFFIX,youtu.be,📺 流媒体
+- DOMAIN-SUFFIX,googlevideo.com,📺 流媒体
+- DOMAIN-SUFFIX,ytimg.com,📺 流媒体
+- DOMAIN-SUFFIX,twitch.tv,📺 流媒体
+- DOMAIN-SUFFIX,ttvnw.net,📺 流媒体
+- GEOSITE,cn,DIRECT
+- GEOIP,CN,DIRECT
+- MATCH,♻️ 自动选择
