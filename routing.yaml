@@ -103,6 +103,14 @@ rules:
 - DOMAIN-SUFFIX,ytimg.com,📺 流媒体
 - DOMAIN-SUFFIX,twitch.tv,📺 流媒体
 - DOMAIN-SUFFIX,ttvnw.net,📺 流媒体
+- DOMAIN-SUFFIX,tiktok.com,📺 流媒体
+- DOMAIN-SUFFIX,tiktokv.com,📺 流媒体
+- DOMAIN-SUFFIX,tiktokcdn.com,📺 流媒体
+- DOMAIN-SUFFIX,tiktokcdn-us.com,📺 流媒体
+- DOMAIN-SUFFIX,ttwstatic.com,📺 流媒体
+- DOMAIN-SUFFIX,ibytedtos.com,📺 流媒体
+- DOMAIN-SUFFIX,byteoversea.com,📺 流媒体
+- DOMAIN-SUFFIX,muscdn.com,📺 流媒体
 - GEOSITE,cn,DIRECT
 - GEOIP,CN,DIRECT,no-resolve
 - MATCH,♻️ 自动选择
