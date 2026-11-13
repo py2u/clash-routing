@@ -133,6 +133,16 @@ rules:
 - DOMAIN-SUFFIX,ibytedtos.com,📺 流媒体
 - DOMAIN-SUFFIX,byteoversea.com,📺 流媒体
 - DOMAIN-SUFFIX,muscdn.com,📺 流媒体
+# ---- 国内图书馆 / 学术资源：强制直连 ----
+- DOMAIN-SUFFIX,library.hb.cn,DIRECT
+- DOMAIN-SUFFIX,hb.cn,DIRECT
+- DOMAIN-SUFFIX,cnki.net,DIRECT
+- DOMAIN-SUFFIX,cnki.com.cn,DIRECT
+- DOMAIN-SUFFIX,wanfangdata.com.cn,DIRECT
+- DOMAIN-SUFFIX,cqvip.com,DIRECT
+- DOMAIN-SUFFIX,chaoxing.com,DIRECT
+- DOMAIN-SUFFIX,duxiu.com,DIRECT
+- DOMAIN-SUFFIX,5read.com,DIRECT
 - GEOSITE,cn,DIRECT
 - GEOIP,CN,DIRECT,no-resolve
 - MATCH,♻️ 自动选择
