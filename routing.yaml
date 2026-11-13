@@ -39,6 +39,9 @@ proxy-groups:
   url: http://cp.cloudflare.com/generate_204
   interval: 300
 rules:
+- DOMAIN-SUFFIX,anthropic.com,🤖 AI 服务
+- DOMAIN-SUFFIX,claude.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI 服务
 - GEOIP,telegram,✈️ Telegram
 - DOMAIN-SUFFIX,deepseek.com,DIRECT
 - DOMAIN-SUFFIX,deepseek.cn,DIRECT
@@ -52,9 +55,6 @@ rules:
 - DOMAIN-SUFFIX,oaistatic.com,🤖 AI 服务
 - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI 服务
 - DOMAIN-SUFFIX,sora.com,🤖 AI 服务
-- DOMAIN-SUFFIX,anthropic.com,🤖 AI 服务
-- DOMAIN-SUFFIX,claude.ai,🤖 AI 服务
-- DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI 服务
 - DOMAIN,gemini.google.com,🤖 AI 服务
 - DOMAIN,bard.google.com,🤖 AI 服务
 - DOMAIN,generativelanguage.googleapis.com,🤖 AI 服务
