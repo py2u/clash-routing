@@ -20,7 +20,6 @@ proxy-groups:
   proxies:
   - 🎬 Reality 专线
   - ♻️ 自动选择
-  - DIRECT
   url: http://cp.cloudflare.com/generate_204
   interval: 300
 - name: 📺 流媒体
@@ -42,13 +41,17 @@ rules:
 - DOMAIN-SUFFIX,anthropic.com,🤖 AI 服务
 - DOMAIN-SUFFIX,claude.ai,🤖 AI 服务
 - DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI 服务
-- GEOIP,telegram,✈️ Telegram
 - DOMAIN-SUFFIX,deepseek.com,DIRECT
 - DOMAIN-SUFFIX,deepseek.cn,DIRECT
 - DOMAIN-SUFFIX,browserleaks.com,♻️ 自动选择
 - DOMAIN-SUFFIX,dnsleaktest.com,♻️ 自动选择
 - GEOSITE,private,DIRECT
 - GEOIP,private,DIRECT,no-resolve
+- DOMAIN-SUFFIX,google.com,🤖 AI 服务
+- DOMAIN-SUFFIX,googleapis.com,🤖 AI 服务
+- DOMAIN-SUFFIX,gstatic.com,🤖 AI 服务
+- DOMAIN-SUFFIX,googleusercontent.com,🤖 AI 服务
+- DOMAIN-SUFFIX,ggpht.com,🤖 AI 服务
 - DOMAIN-SUFFIX,openai.com,🤖 AI 服务
 - DOMAIN-SUFFIX,chatgpt.com,🤖 AI 服务
 - DOMAIN-SUFFIX,chat.com,🤖 AI 服务
@@ -109,6 +112,7 @@ rules:
 - DOMAIN-SUFFIX,telegram.me,✈️ Telegram
 - DOMAIN-SUFFIX,telesco.pe,✈️ Telegram
 - DOMAIN-SUFFIX,telegra.ph,✈️ Telegram
+- GEOIP,telegram,✈️ Telegram,no-resolve
 - DOMAIN-SUFFIX,netflix.com,📺 流媒体
 - DOMAIN-SUFFIX,nflxvideo.net,📺 流媒体
 - DOMAIN-SUFFIX,nflxso.net,📺 流媒体
