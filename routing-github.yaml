@@ -1,0 +1,367 @@
+dns:
+  enable: true
+  ipv6: false
+  listen: :53
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "*.arpa"
+    - "time.*.com"
+    - "ntp.*.com"
+    - "+.market.xiaomi.com"
+    - localhost.ptlogin2.qq.com
+    - "*.msftncsi.com"
+    - www.msftconnecttest.com
+  hosts:
+    box.1248600.xyz: 38.244.11.193
+  use-hosts: true
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  proxy-server-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:
+    - https://box.1248600.xyz:8444/dns-query
+  nameserver-policy:
+    "+.cn": [223.5.5.5, 119.29.29.29]
+    "+.qq.com": [223.5.5.5, 119.29.29.29]
+    "+.baidu.com": [223.5.5.5, 119.29.29.29]
+    "+.bilibili.com": [223.5.5.5, 119.29.29.29]
+    "+.jd.com": [223.5.5.5, 119.29.29.29]
+  respect-rules: false
+  use-system-hosts: false
+  fallback: []
+
+proxy-groups:
+- name: ♻️ 自动选择
+  type: url-test
+  url: http://cp.cloudflare.com/generate_204
+  interval: 300
+  tolerance: 20
+  lazy: true
+  include-all-proxies: true
+  filter: (?i)Lisa
+- name: 🎬 Reality 专线
+  type: url-test
+  url: http://cp.cloudflare.com/generate_204
+  interval: 300
+  tolerance: 20
+  lazy: true
+  include-all-proxies: true
+  filter: (?i)Reality
+- name: 🤖 AI 服务
+  type: select
+  proxies:
+  - 🎬 Reality 专线
+  - ♻️ 自动选择
+- name: 📺 流媒体
+  type: select
+  proxies:
+  - ♻️ 自动选择
+  - 🎬 Reality 专线
+  - DIRECT
+- name: 📱 社交媒体
+  type: select
+  proxies:
+  - ♻️ 自动选择
+  - 🎬 Reality 专线
+  - DIRECT
+- name: ✈️ Telegram
+  type: select
+  proxies:
+  - ♻️ 自动选择
+  - DIRECT
+- name: 🍎 苹果服务
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 自动选择
+  - 🎬 Reality 专线
+- name: 🎮 游戏平台
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 自动选择
+  - 🎬 Reality 专线
+- name: 🛠️ 开发者
+  type: select
+  proxies:
+  - ♻️ 自动选择
+  - 🎬 Reality 专线
+  - DIRECT
+
+rules:
+# ===== 私有网络 =====
+- GEOSITE,private,DIRECT
+- GEOIP,private,DIRECT,no-resolve
+
+# ===== AI / 大模型 =====
+- DOMAIN-SUFFIX,openai.com,🤖 AI 服务
+- DOMAIN-SUFFIX,chatgpt.com,🤖 AI 服务
+- DOMAIN-SUFFIX,chat.com,🤖 AI 服务
+- DOMAIN-SUFFIX,oaistatic.com,🤖 AI 服务
+- DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI 服务
+- DOMAIN-SUFFIX,sora.com,🤖 AI 服务
+- DOMAIN-SUFFIX,anthropic.com,🤖 AI 服务
+- DOMAIN-SUFFIX,claude.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI 服务
+- DOMAIN,gemini.google.com,🤖 AI 服务
+- DOMAIN,bard.google.com,🤖 AI 服务
+- DOMAIN,generativelanguage.googleapis.com,🤖 AI 服务
+- DOMAIN,aistudio.google.com,🤖 AI 服务
+- DOMAIN,notebooklm.google.com,🤖 AI 服务
+- DOMAIN,labs.google,🤖 AI 服务
+- DOMAIN-SUFFIX,deepmind.google,🤖 AI 服务
+- DOMAIN-SUFFIX,deepmind.com,🤖 AI 服务
+- DOMAIN-SUFFIX,perplexity.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,poe.com,🤖 AI 服务
+- DOMAIN-SUFFIX,midjourney.com,🤖 AI 服务
+- DOMAIN-SUFFIX,huggingface.co,🤖 AI 服务
+- DOMAIN-SUFFIX,groq.com,🤖 AI 服务
+- DOMAIN-SUFFIX,x.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,cursor.com,🤖 AI 服务
+- DOMAIN-SUFFIX,cursor.sh,🤖 AI 服务
+- DOMAIN-SUFFIX,openrouter.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,together.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,mistral.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,cohere.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,character.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,elevenlabs.io,🤖 AI 服务
+- DOMAIN-SUFFIX,copilot.microsoft.com,🤖 AI 服务
+- DOMAIN-SUFFIX,grok.com,🤖 AI 服务
+- DOMAIN-SUFFIX,githubcopilot.com,🤖 AI 服务
+- DOMAIN-SUFFIX,meta.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,runwayml.com,🤖 AI 服务
+- DOMAIN-SUFFIX,pika.art,🤖 AI 服务
+- DOMAIN-SUFFIX,luma.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,windsurf.com,🤖 AI 服务
+- DOMAIN-SUFFIX,codeium.com,🤖 AI 服务
+- DOMAIN-SUFFIX,phind.com,🤖 AI 服务
+- DOMAIN-SUFFIX,you.com,🤖 AI 服务
+- DOMAIN-SUFFIX,suno.com,🤖 AI 服务
+- DOMAIN-SUFFIX,ideogram.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,leonardo.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,civitai.com,🤖 AI 服务
+- DOMAIN-SUFFIX,fal.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,replicate.com,🤖 AI 服务
+- DOMAIN-SUFFIX,stability.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,heygen.com,🤖 AI 服务
+- DOMAIN-SUFFIX,synthesia.io,🤖 AI 服务
+- DOMAIN-SUFFIX,descript.com,🤖 AI 服务
+- DOMAIN-SUFFIX,gamma.app,🤖 AI 服务
+- DOMAIN-SUFFIX,firefly.adobe.com,🤖 AI 服务
+- DOMAIN-SUFFIX,otter.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,assemblyai.com,🤖 AI 服务
+- DOMAIN-SUFFIX,deepgram.com,🤖 AI 服务
+- DOMAIN-SUFFIX,krea.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,v0.dev,🤖 AI 服务
+- DOMAIN-SUFFIX,bolt.new,🤖 AI 服务
+- DOMAIN-SUFFIX,lovable.dev,🤖 AI 服务
+- DOMAIN-SUFFIX,langchain.com,🤖 AI 服务
+- DOMAIN-SUFFIX,llamaindex.ai,🤖 AI 服务
+- DOMAIN-SUFFIX,pinecone.io,🤖 AI 服务
+- DOMAIN-SUFFIX,weaviate.io,🤖 AI 服务
+- DOMAIN-SUFFIX,chroma.com,🤖 AI 服务
+- DOMAIN-SUFFIX,deepseek.com,DIRECT
+- DOMAIN-SUFFIX,deepseek.cn,DIRECT
+
+# ===== Google 全家桶（Gemini 走 AI 服务，其余也走同一出口） =====
+- DOMAIN-SUFFIX,google.com,🤖 AI 服务
+- DOMAIN-SUFFIX,googleapis.com,🤖 AI 服务
+- DOMAIN-SUFFIX,gstatic.com,🤖 AI 服务
+- DOMAIN-SUFFIX,googleusercontent.com,🤖 AI 服务
+- DOMAIN-SUFFIX,ggpht.com,🤖 AI 服务
+- DOMAIN-SUFFIX,withgoogle.com,🤖 AI 服务
+
+# ===== Telegram =====
+- DOMAIN-SUFFIX,telegram.org,✈️ Telegram
+- DOMAIN-SUFFIX,t.me,✈️ Telegram
+- DOMAIN-SUFFIX,telegram.me,✈️ Telegram
+- DOMAIN-SUFFIX,telesco.pe,✈️ Telegram
+- DOMAIN-SUFFIX,telegra.ph,✈️ Telegram
+- DOMAIN-SUFFIX,tdesktop.com,✈️ Telegram
+- GEOIP,telegram,✈️ Telegram,no-resolve
+
+# ===== 全球流媒体 =====
+- DOMAIN-SUFFIX,netflix.com,📺 流媒体
+- DOMAIN-SUFFIX,nflxvideo.net,📺 流媒体
+- DOMAIN-SUFFIX,nflxso.net,📺 流媒体
+- DOMAIN-SUFFIX,nflximg.net,📺 流媒体
+- DOMAIN-SUFFIX,disneyplus.com,📺 流媒体
+- DOMAIN-SUFFIX,disney-plus.net,📺 流媒体
+- DOMAIN-SUFFIX,dssott.com,📺 流媒体
+- DOMAIN-SUFFIX,hulu.com,📺 流媒体
+- DOMAIN-SUFFIX,hbomax.com,📺 流媒体
+- DOMAIN-SUFFIX,hbomaxcdn.com,📺 流媒体
+- DOMAIN-SUFFIX,max.com,📺 流媒体
+- DOMAIN-SUFFIX,primevideo.com,📺 流媒体
+- DOMAIN-SUFFIX,amazonvideo.com,📺 流媒体
+- DOMAIN-SUFFIX,aiv-cdn.net,📺 流媒体
+- DOMAIN-SUFFIX,spotify.com,📺 流媒体
+- DOMAIN-SUFFIX,scdn.co,📺 流媒体
+- DOMAIN-SUFFIX,spotifycdn.com,📺 流媒体
+- DOMAIN-SUFFIX,youtube.com,📺 流媒体
+- DOMAIN-SUFFIX,youtu.be,📺 流媒体
+- DOMAIN-SUFFIX,googlevideo.com,📺 流媒体
+- DOMAIN-SUFFIX,ytimg.com,📺 流媒体
+- DOMAIN-SUFFIX,yt.be,📺 流媒体
+- DOMAIN-SUFFIX,twitch.tv,📺 流媒体
+- DOMAIN-SUFFIX,ttvnw.net,📺 流媒体
+- DOMAIN-SUFFIX,tiktok.com,📺 流媒体
+- DOMAIN-SUFFIX,tiktokv.com,📺 流媒体
+- DOMAIN-SUFFIX,tiktokcdn.com,📺 流媒体
+- DOMAIN-SUFFIX,tiktokcdn-us.com,📺 流媒体
+- DOMAIN-SUFFIX,ttwstatic.com,📺 流媒体
+- DOMAIN-SUFFIX,ibytedtos.com,📺 流媒体
+- DOMAIN-SUFFIX,byteoversea.com,📺 流媒体
+- DOMAIN-SUFFIX,muscdn.com,📺 流媒体
+- DOMAIN-SUFFIX,appletv.com,📺 流媒体
+- DOMAIN-SUFFIX,paramountplus.com,📺 流媒体
+- DOMAIN-SUFFIX,peacocktv.com,📺 流媒体
+- DOMAIN-SUFFIX,crunchyroll.com,📺 流媒体
+- DOMAIN-SUFFIX,soundcloud.com,📺 流媒体
+- DOMAIN-SUFFIX,deezer.com,📺 流媒体
+- DOMAIN-SUFFIX,tidal.com,📺 流媒体
+- DOMAIN-SUFFIX,pandora.com,📺 流媒体
+- DOMAIN-SUFFIX,plex.tv,📺 流媒体
+
+# ===== 社交媒体 =====
+- DOMAIN-SUFFIX,x.com,📱 社交媒体
+- DOMAIN-SUFFIX,twitter.com,📱 社交媒体
+- DOMAIN-SUFFIX,twimg.com,📱 社交媒体
+- DOMAIN-SUFFIX,facebook.com,📱 社交媒体
+- DOMAIN-SUFFIX,fbcdn.net,📱 社交媒体
+- DOMAIN-SUFFIX,instagram.com,📱 社交媒体
+- DOMAIN-SUFFIX,cdninstagram.com,📱 社交媒体
+- DOMAIN-SUFFIX,reddit.com,📱 社交媒体
+- DOMAIN-SUFFIX,redd.it,📱 社交媒体
+- DOMAIN-SUFFIX,redditmedia.com,📱 社交媒体
+- DOMAIN-SUFFIX,discord.com,📱 社交媒体
+- DOMAIN-SUFFIX,discordapp.com,📱 社交媒体
+- DOMAIN-SUFFIX,discordapp.net,📱 社交媒体
+- DOMAIN-SUFFIX,whatsapp.com,📱 社交媒体
+- DOMAIN-SUFFIX,whatsapp.net,📱 社交媒体
+- DOMAIN-SUFFIX,signal.org,📱 社交媒体
+- DOMAIN-SUFFIX,snapchat.com,📱 社交媒体
+- DOMAIN-SUFFIX,pinterest.com,📱 社交媒体
+- DOMAIN-SUFFIX,tumblr.com,📱 社交媒体
+- DOMAIN-SUFFIX,linkedin.com,📱 社交媒体
+- DOMAIN-SUFFIX,licdn.com,📱 社交媒体
+- DOMAIN-SUFFIX,threads.net,📱 社交媒体
+- DOMAIN-SUFFIX,mastodon.social,📱 社交媒体
+
+# ===== 苹果服务 =====
+- DOMAIN-SUFFIX,apple.com,🍎 苹果服务
+- DOMAIN-SUFFIX,icloud.com,🍎 苹果服务
+- DOMAIN-SUFFIX,icloud-content.com,🍎 苹果服务
+- DOMAIN-SUFFIX,mzstatic.com,🍎 苹果服务
+- DOMAIN-SUFFIX,me.com,🍎 苹果服务
+- DOMAIN-SUFFIX,appstore.com,🍎 苹果服务
+
+# ===== 游戏平台 =====
+- DOMAIN-SUFFIX,steampowered.com,🎮 游戏平台
+- DOMAIN-SUFFIX,steamstatic.com,🎮 游戏平台
+- DOMAIN-SUFFIX,steamcontent.com,🎮 游戏平台
+- DOMAIN-SUFFIX,epicgames.com,🎮 游戏平台
+- DOMAIN-SUFFIX,epicgames.dev,🎮 游戏平台
+- DOMAIN-SUFFIX,playstation.com,🎮 游戏平台
+- DOMAIN-SUFFIX,playstation.net,🎮 游戏平台
+- DOMAIN-SUFFIX,xbox.com,🎮 游戏平台
+- DOMAIN-SUFFIX,xboxlive.com,🎮 游戏平台
+- DOMAIN-SUFFIX,nintendo.com,🎮 游戏平台
+- DOMAIN-SUFFIX,nintendo.net,🎮 游戏平台
+- DOMAIN-SUFFIX,ea.com,🎮 游戏平台
+- DOMAIN-SUFFIX,ubisoft.com,🎮 游戏平台
+- DOMAIN-SUFFIX,battle.net,🎮 游戏平台
+- DOMAIN-SUFFIX,blizzard.com,🎮 游戏平台
+- DOMAIN-SUFFIX,riotgames.com,🎮 游戏平台
+
+# ===== 开发者 / 代码托管 =====
+- DOMAIN-SUFFIX,github.com,🛠️ 开发者
+- DOMAIN-SUFFIX,githubusercontent.com,🛠️ 开发者
+- DOMAIN-SUFFIX,githubassets.com,🛠️ 开发者
+- DOMAIN-SUFFIX,gitlab.com,🛠️ 开发者
+- DOMAIN-SUFFIX,bitbucket.org,🛠️ 开发者
+- DOMAIN-SUFFIX,docker.com,🛠️ 开发者
+- DOMAIN-SUFFIX,docker.io,🛠️ 开发者
+- DOMAIN-SUFFIX,npmjs.org,🛠️ 开发者
+- DOMAIN-SUFFIX,npmjs.com,🛠️ 开发者
+- DOMAIN-SUFFIX,pypi.org,🛠️ 开发者
+- DOMAIN-SUFFIX,pythonhosted.org,🛠️ 开发者
+- DOMAIN-SUFFIX,stackoverflow.com,🛠️ 开发者
+- DOMAIN-SUFFIX,stackexchange.com,🛠️ 开发者
+- DOMAIN-SUFFIX,jetbrains.com,🛠️ 开发者
+- DOMAIN-SUFFIX,vercel.com,🛠️ 开发者
+- DOMAIN-SUFFIX,netlify.com,🛠️ 开发者
+- DOMAIN-SUFFIX,cloudflare.com,🛠️ 开发者
+- DOMAIN-SUFFIX,cdnjs.cloudflare.com,🛠️ 开发者
+
+# ===== 微软 / 办公 =====
+- DOMAIN-SUFFIX,microsoft.com,♻️ 自动选择
+- DOMAIN-SUFFIX,office.com,♻️ 自动选择
+- DOMAIN-SUFFIX,office365.com,♻️ 自动选择
+- DOMAIN-SUFFIX,onedrive.com,♻️ 自动选择
+- DOMAIN-SUFFIX,live.com,♻️ 自动选择
+- DOMAIN-SUFFIX,msftconnecttest.com,DIRECT
+- DOMAIN-SUFFIX,msftncsi.com,DIRECT
+- DOMAIN-SUFFIX,bing.com,♻️ 自动选择
+- DOMAIN-SUFFIX,azure.com,♻️ 自动选择
+
+# ===== 纯净度 / 检测站 =====
+- DOMAIN-SUFFIX,browserleaks.com,♻️ 自动选择
+- DOMAIN-SUFFIX,dnsleaktest.com,♻️ 自动选择
+- DOMAIN-SUFFIX,ipjudge.org,♻️ 自动选择
+- DOMAIN-SUFFIX,ipleak.net,♻️ 自动选择
+
+# ===== 国内图书馆 / 学术资源：强制直连 =====
+- DOMAIN-SUFFIX,library.hb.cn,DIRECT
+- DOMAIN-SUFFIX,hb.cn,DIRECT
+- DOMAIN-SUFFIX,cnki.net,DIRECT
+- DOMAIN-SUFFIX,cnki.com.cn,DIRECT
+- DOMAIN-SUFFIX,wanfangdata.com.cn,DIRECT
+- DOMAIN-SUFFIX,cqvip.com,DIRECT
+- DOMAIN-SUFFIX,chaoxing.com,DIRECT
+- DOMAIN-SUFFIX,duxiu.com,DIRECT
+- DOMAIN-SUFFIX,5read.com,DIRECT
+
+# ===== 国内常用直连 =====
+- DOMAIN-SUFFIX,cn,DIRECT
+- DOMAIN-SUFFIX,baidu.com,DIRECT
+- DOMAIN-SUFFIX,qq.com,DIRECT
+- DOMAIN-SUFFIX,weixin.qq.com,DIRECT
+- DOMAIN-SUFFIX,wechat.com,DIRECT
+- DOMAIN-SUFFIX,taobao.com,DIRECT
+- DOMAIN-SUFFIX,tmall.com,DIRECT
+- DOMAIN-SUFFIX,alipay.com,DIRECT
+- DOMAIN-SUFFIX,alicdn.com,DIRECT
+- DOMAIN-SUFFIX,jd.com,DIRECT
+- DOMAIN-SUFFIX,pinduoduo.com,DIRECT
+- DOMAIN-SUFFIX,meituan.com,DIRECT
+- DOMAIN-SUFFIX,dianping.com,DIRECT
+- DOMAIN-SUFFIX,12306.cn,DIRECT
+- DOMAIN-SUFFIX,bilibili.com,DIRECT
+- DOMAIN-SUFFIX,hdslb.com,DIRECT
+- DOMAIN-SUFFIX,bilivideo.com,DIRECT
+- DOMAIN-SUFFIX,douyin.com,DIRECT
+- DOMAIN-SUFFIX,zhihu.com,DIRECT
+- DOMAIN-SUFFIX,weibo.com,DIRECT
+- DOMAIN-SUFFIX,xiaohongshu.com,DIRECT
+- DOMAIN-SUFFIX,163.com,DIRECT
+- DOMAIN-SUFFIX,126.net,DIRECT
+- DOMAIN-SUFFIX,youku.com,DIRECT
+- DOMAIN-SUFFIX,iqiyi.com,DIRECT
+- DOMAIN-SUFFIX,qq.com.cn,DIRECT
+- DOMAIN-SUFFIX,xiaomi.com,DIRECT
+- DOMAIN-SUFFIX,huawei.com,DIRECT
+- DOMAIN-SUFFIX,aliyun.com,DIRECT
+- DOMAIN-SUFFIX,tencent.com,DIRECT
+- DOMAIN-SUFFIX,gov.cn,DIRECT
+- DOMAIN-SUFFIX,edu.cn,DIRECT
+- GEOSITE,cn,DIRECT
+- GEOIP,CN,DIRECT,no-resolve
+
+# ===== 兜底 =====
+- MATCH,♻️ 自动选择
