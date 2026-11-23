@@ -57,40 +57,36 @@ sniffer:
     - "+.push.aliyuncs.com"
 
 # ------------------------------------------------------------
-# 策略组（按用途分类，共 5 个）
+# 策略组（按用途分类，共 4 个；不按地区/节点名筛选）
 # ------------------------------------------------------------
 proxy-groups:
   # 用途组 1：AI 专用
   # select 类型 + 手动选一个节点 = 出口固定，不会像 url-test 那样自动跳。
-  # 首次使用请在此组里手动选一个美国节点，之后不要改。
+  # 首次使用请在此组里手动选一个节点，之后不要改。
   - name: "🤖 AI 专用"
     type: select
     include-all: true
-    filter: "(?i)(🇺🇸|美国|\\bUS\\b|united.?states|america)"
 
   # 用途组 2：流媒体
   # 用 YouTube 探活，按播放体验挑节点；与通用组的 gstatic 测速区分开。
   - name: "🎬 流媒体"
     type: url-test
     include-all: true
-    filter: "(?i)(🇺🇸|美国|\\bUS\\b|united.?states|america)"
     url: https://www.youtube.com/generate_204
     interval: 300
     tolerance: 50
     lazy: true
 
   # 用途组 3：通用海外（总入口）
-  # 原「🇺🇸 美国节点」已并入本组：include-all + filter 自动列出全部美国节点，
-  # 默认第一项是美国节点，保持「未知流量走美国」；同时保留自动选择和 DIRECT。
+  # 列出全部节点，另附自动选择与 DIRECT；未知流量走本组。
   - name: "🌍 通用海外"
     type: select
     include-all: true
-    filter: "(?i)(🇺🇸|美国|\\bUS\\b|united.?states|america)"
     proxies:
       - "♻️ 自动选择"
       - DIRECT
 
-  # 工具组 4：自动选择（全节点测速）
+  # 工具组 4：自动选择（全节点测速，排除流量警示类节点）
   - name: "♻️ 自动选择"
     type: url-test
     include-all: true
@@ -239,5 +235,5 @@ rules:
   - RULE-SET,cn-domain,DIRECT
   - RULE-SET,cn-ip,DIRECT
 
-  # 未知目的地走通用海外组（默认选中 🇺🇸 美国节点）
+  # 未知目的地走通用海外组
   - MATCH,🌍 通用海外
