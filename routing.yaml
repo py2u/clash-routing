@@ -68,11 +68,13 @@ proxy-groups:
     include-all: true
 
   # 用途组 2：流媒体
-  # 用 YouTube 探活，按播放体验挑节点；与通用组的 gstatic 测速区分开。
+  # 用 gstatic 探活：youtube.com/generate_204 在数据中心 IP 上常返回 200/302/429，
+  # Mihomo 默认只认 204，会判成全红。gstatic 端点稳定返回 204。
   - name: "🎬 流媒体"
     type: url-test
     include-all: true
-    url: https://www.youtube.com/generate_204
+    url: https://www.gstatic.com/generate_204
+    expected-status: 204
     interval: 300
     tolerance: 50
     lazy: true
