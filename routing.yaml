@@ -1,6 +1,6 @@
 # Clash Verge Rev / Mihomo 覆写配置（按用途分类版）
 # 导入「扩展覆写配置 / Merge」，不要替换订阅本身。
-# 3 组：🤖 AI 专用｜🎬 流媒体｜🌍 海外
+# 3 组：🤖 AI 专用（固定出口）｜🎬 流媒体（YouTube 测速）｜🌍 通用海外（总入口）
 
 mode: rule
 ipv6: false
@@ -27,19 +27,23 @@ dns:
     - "+.msftncsi.com"
     - "localhost"
     - "+.localdomain"
+  # bootstrap：仅解析 DoH 服务器域名，必须是 IP，直连
   default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
+  # 节点域名单独用国内 DoH 解析，避免「先连代理才能解析代理」的循环
   proxy-server-nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
+  # 国内域名走国内 DoH，加速且防污染
   nameserver-policy:
     "rule-set:cn-domain":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
+  # 其余域名（含 DNS 泄漏测试站）走境外 DoH；respect-rules 下经代理出口
   nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google/dns-query
   respect-rules: true
 
 # ------------------------------------------------------------
@@ -66,9 +70,12 @@ proxy-groups:
   - name: "🤖 AI 专用"
     type: select
     include-all: true
-    
+
+  # 用途组 2：流媒体
   # 以 YouTube 为探活目标，自动挑延迟最低的节点（url-test）。
-  - name: "🎬 YouTube"
+  # expected-status 放宽到 200/204/302，避免正常节点被判红；
+  # 若仍全红说明节点侧连不上 youtube.com，把 url 换成 gstatic 即可。
+  - name: "🎬 流媒体"
     type: url-test
     include-all: true
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
@@ -78,9 +85,9 @@ proxy-groups:
     tolerance: 50
     lazy: true
 
-  # 用途组 3：海外
+  # 用途组 3：通用海外（总入口）
   # 列出全部节点，另附 DIRECT；未知流量走本组，可手动挑节点。
-  - name: "🌍 海外"
+  - name: "🌍 通用海外"
     type: select
     include-all: true
     proxies:
@@ -96,7 +103,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/private-domain.mrs
-    proxy: "🎬 YouTube"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
 
   ads-domain:
@@ -105,7 +112,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/ads-domain.mrs
-    proxy: "🎬 YouTube"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
 
   cn-domain:
@@ -114,7 +121,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/cn-domain.mrs
-    proxy: "🎬 YouTube"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs
 
   overseas-domain:
@@ -123,7 +130,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/overseas-domain.mrs
-    proxy: "🎬 YouTube"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs
 
   apple-cn:
@@ -132,7 +139,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/apple-cn.mrs
-    proxy: "🎬 YouTube"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple-cn.mrs
 
   microsoft-cn:
@@ -141,7 +148,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/microsoft-cn.mrs
-    proxy: "🎬 YouTube"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft%40cn.mrs
 
   steam-cn:
@@ -150,7 +157,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/steam-cn.mrs
-    proxy: "🎬 YouTube"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam%40cn.mrs
 
   cn-ip:
@@ -159,7 +166,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/cn-ip.mrs
-    proxy: "🎬 YouTube"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs
 
 # ------------------------------------------------------------
