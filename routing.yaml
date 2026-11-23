@@ -66,8 +66,7 @@ proxy-groups:
   - name: "🤖 AI 专用"
     type: select
     include-all: true
-
-  # 用途组 2：流媒体
+    
   # 以 YouTube 为探活目标，自动挑延迟最低的节点（url-test）。
   - name: "🎬 YouTube"
     type: url-test
@@ -97,7 +96,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/private-domain.mrs
-    proxy: "🎬 流媒体"
+    proxy: "🎬 YouTube"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
 
   ads-domain:
@@ -106,7 +105,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/ads-domain.mrs
-    proxy: "🎬 流媒体"
+    proxy: "🎬 YouTube"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
 
   cn-domain:
@@ -115,7 +114,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/cn-domain.mrs
-    proxy: "🎬 流媒体"
+    proxy: "🎬 YouTube"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs
 
   overseas-domain:
@@ -124,7 +123,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/overseas-domain.mrs
-    proxy: "🎬 流媒体"
+    proxy: "🎬 YouTube"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs
 
   apple-cn:
@@ -133,7 +132,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/apple-cn.mrs
-    proxy: "🎬 流媒体"
+    proxy: "🎬 YouTube"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple-cn.mrs
 
   microsoft-cn:
@@ -142,7 +141,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/microsoft-cn.mrs
-    proxy: "🎬 流媒体"
+    proxy: "🎬 YouTube"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft%40cn.mrs
 
   steam-cn:
@@ -151,7 +150,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/steam-cn.mrs
-    proxy: "🎬 流媒体"
+    proxy: "🎬 YouTube"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam%40cn.mrs
 
   cn-ip:
@@ -160,7 +159,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/cn-ip.mrs
-    proxy: "🎬 流媒体"
+    proxy: "🎬 YouTube"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs
 
 # ------------------------------------------------------------
