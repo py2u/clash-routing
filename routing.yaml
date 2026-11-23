@@ -1,39 +1,77 @@
-# Clash Verge Rev / Mihomo 覆写配置
+# ============================================================
+# Clash Verge Rev / Mihomo 覆写配置（完整修订版）
 # 用途：国内直连，海外与未知流量走美国节点；订阅更新后仍保留规则。
-# 使用：在 Clash Verge 的“覆写/合并配置”中导入本文件，不要替换订阅本身。
+# 使用：在 Clash Verge 的「扩展覆写配置 / Merge」中导入本文件，不要替换订阅本身。
+#
+# 本版相对原版的改动（均已就地注释标明）：
+#   1. 顶层补 ipv6: false，与 dns.ipv6 形成双保险
+#   2. fake-ip-filter 补全内核默认条目
+#   3. 🇺🇸 美国节点 filter 中 us 加词边界，避免误匹配 Russia 等
+#   4. cn-ip 规则去掉 no-resolve，恢复国内 IP 兜底能力
+#   5. MATCH 改走 🇺🇸 美国节点，严格符合「未知走美国」意图
+#   6. rule-providers.proxy 改走 ♻️ 自动选择，避免主组切 DIRECT 后规则集拉取失败
+#   7. nameserver 改为国内加密 DNS（fake-ip 下海外域名由节点侧解析，不受污染影响）
+#   8. 新增 sniffer，提升直接用 IP 连接时的域名识别率
+# ============================================================
 
 mode: rule
+ipv6: false                      # 【改动1】顶层关闭，防止 IPv6 流量绕过规则
 unified-delay: true
 tcp-concurrent: true
 profile:
   store-selected: true
   store-fake-ip: true
 
+# ------------------------------------------------------------
+# DNS
+# ------------------------------------------------------------
 dns:
   enable: true
   ipv6: false
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
+    # 【改动2】以下 4 条为内核默认列表中的关键项，自定义后会覆盖默认值，必须显式补齐
     - "+.lan"
     - "+.local"
     - "+.arpa"
+    - "+.in-addr.arpa"           # PTR 反向解析，补
+    - "+.msftconnecttest.com"    # Windows 网络连通性检测，补
+    - "+.msftncsi.com"           # Windows NCSI 探测，补
+    - "localhost"                # 本机，补
+    - "+.localdomain"            # 本地域，补
   default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
-  proxy-server-nameserver:
+  proxy-server-nameserver:       # 专用于解析订阅节点域名，避免被污染
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
   nameserver-policy:
     "rule-set:cn-domain":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
-  nameserver:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
+  nameserver:                    # 【改动7】原为 1.1.1.1 / dns.google，需绕美国节点且延迟高
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
   respect-rules: true
 
-# 只保留三个可见策略组：手动选择、自动测速、美国节点。
+# ------------------------------------------------------------
+# 域名嗅探
+# ------------------------------------------------------------
+sniffer:                         # 【改动8】客户端直接用 IP 连接时嗅探域名，提升分流准确率
+  enable: true
+  sniff:
+    TLS:
+      ports: [443, 8443]
+    HTTP:
+      ports: [80, 8080-8880]
+  skip-domain:
+    - "+.push.taobao.com"
+    - "+.push.aliyuncs.com"
+
+# ------------------------------------------------------------
+# 策略组（保留三个可见组，节点选择、自动测速、美国节点）
+# ------------------------------------------------------------
 proxy-groups:
   - name: "🚀 节点选择"
     type: select
@@ -45,7 +83,7 @@ proxy-groups:
   - name: "♻️ 自动选择"
     type: url-test
     include-all: true
-    filter: "^(?!.*(?:剩余|流量|到期|官网|套餐)).*$"
+    filter: "^(?!.*(剩余|流量|到期|官网|套餐)).*$"   # regexp2 支持负向前瞻，语法合法
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -54,8 +92,12 @@ proxy-groups:
   - name: "🇺🇸 美国节点"
     type: select
     include-all: true
-    filter: "(?i)(🇺🇸|美国|us|united.?states|america)"
+    # 【改动3】原 filter 中裸 us 会匹配 Russia / Australia 等；加词边界后只匹配独立 us
+    filter: "(?i)(🇺🇸|美国|\\bUS\\b|united.?states|america)"
 
+# ------------------------------------------------------------
+# 规则集订阅
+# ------------------------------------------------------------
 rule-providers:
   private-domain:
     type: http
@@ -63,7 +105,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/private-domain.mrs
-    proxy: "🚀 节点选择"
+    proxy: "♻️ 自动选择"          # 【改动6】原为 🚀 节点选择；切 DIRECT 后 GitHub raw 下载会失败
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
 
   ads-domain:
@@ -72,7 +114,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/ads-domain.mrs
-    proxy: "🚀 节点选择"
+    proxy: "♻️ 自动选择"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
 
   cn-domain:
@@ -81,7 +123,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/cn-domain.mrs
-    proxy: "🚀 节点选择"
+    proxy: "♻️ 自动选择"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs
 
   overseas-domain:
@@ -90,7 +132,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/overseas-domain.mrs
-    proxy: "🚀 节点选择"
+    proxy: "♻️ 自动选择"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs
 
   apple-cn:
@@ -99,7 +141,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/apple-cn.mrs
-    proxy: "🚀 节点选择"
+    proxy: "♻️ 自动选择"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple-cn.mrs
 
   microsoft-cn:
@@ -108,7 +150,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/microsoft-cn.mrs
-    proxy: "🚀 节点选择"
+    proxy: "♻️ 自动选择"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft%40cn.mrs
 
   steam-cn:
@@ -117,7 +159,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/steam-cn.mrs
-    proxy: "🚀 节点选择"
+    proxy: "♻️ 自动选择"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam%40cn.mrs
 
   cn-ip:
@@ -126,9 +168,12 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/cn-ip.mrs
-    proxy: "🚀 节点选择"
+    proxy: "♻️ 自动选择"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs
 
+# ------------------------------------------------------------
+# 分流规则（自上而下，首条命中生效）
+# ------------------------------------------------------------
 rules:
   # 局域网、本机、NAS、打印机等
   - GEOIP,private,DIRECT,no-resolve
@@ -147,7 +192,10 @@ rules:
 
   # 国内网站与国内 IP 直连
   - RULE-SET,cn-domain,DIRECT
-  - RULE-SET,cn-ip,DIRECT,no-resolve
+  # 【改动4】去掉 no-resolve：fake-ip 下带该修饰符会使 IP 规则无法匹配假 IP，
+  #          导致不在 cn-domain 中的国内小众域名漏到 MATCH 被代理
+  - RULE-SET,cn-ip,DIRECT
 
   # 未知目的地默认走美国节点
-  - MATCH,🚀 节点选择
+  # 【改动5】原为 🚀 节点选择；改成美国组后，主组切 DIRECT 也不影响兜底策略
+  - MATCH,🇺🇸 美国节点
