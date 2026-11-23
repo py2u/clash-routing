@@ -1,21 +1,5 @@
-# ============================================================
-# Clash Verge Rev / Mihomo 覆写配置（完整修订版）
-# 用途：国内直连，海外与未知流量走美国节点；订阅更新后仍保留规则。
-# 使用：在 Clash Verge 的「扩展覆写配置 / Merge」中导入本文件，不要替换订阅本身。
-#
-# 本版相对原版的改动（均已就地注释标明）：
-#   1. 顶层补 ipv6: false，与 dns.ipv6 形成双保险
-#   2. fake-ip-filter 补全内核默认条目
-#   3. 🇺🇸 美国节点 filter 中 us 加词边界，避免误匹配 Russia 等
-#   4. cn-ip 规则去掉 no-resolve，恢复国内 IP 兜底能力
-#   5. MATCH 改走 🇺🇸 美国节点，严格符合「未知走美国」意图
-#   6. rule-providers.proxy 改走 ♻️ 自动选择，避免主组切 DIRECT 后规则集拉取失败
-#   7. nameserver 改为国内加密 DNS（fake-ip 下海外域名由节点侧解析，不受污染影响）
-#   8. 新增 sniffer，提升直接用 IP 连接时的域名识别率
-# ============================================================
-
 mode: rule
-ipv6: false                      # 【改动1】顶层关闭，防止 IPv6 流量绕过规则
+ipv6: false
 unified-delay: true
 tcp-concurrent: true
 profile:
@@ -31,26 +15,25 @@ dns:
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
-    # 【改动2】以下 4 条为内核默认列表中的关键项，自定义后会覆盖默认值，必须显式补齐
     - "+.lan"
     - "+.local"
     - "+.arpa"
-    - "+.in-addr.arpa"           # PTR 反向解析，补
-    - "+.msftconnecttest.com"    # Windows 网络连通性检测，补
-    - "+.msftncsi.com"           # Windows NCSI 探测，补
-    - "localhost"                # 本机，补
-    - "+.localdomain"            # 本地域，补
+    - "+.in-addr.arpa"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+    - "localhost"
+    - "+.localdomain"
   default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
-  proxy-server-nameserver:       # 专用于解析订阅节点域名，避免被污染
+  proxy-server-nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
   nameserver-policy:
     "rule-set:cn-domain":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
-  nameserver:                    # 【改动7】原为 1.1.1.1 / dns.google，需绕美国节点且延迟高
+  nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
   respect-rules: true
@@ -58,7 +41,7 @@ dns:
 # ------------------------------------------------------------
 # 域名嗅探
 # ------------------------------------------------------------
-sniffer:                         # 【改动8】客户端直接用 IP 连接时嗅探域名，提升分流准确率
+sniffer:
   enable: true
   sniff:
     TLS:
@@ -70,29 +53,51 @@ sniffer:                         # 【改动8】客户端直接用 IP 连接时�
     - "+.push.aliyuncs.com"
 
 # ------------------------------------------------------------
-# 策略组（保留三个可见组，节点选择、自动测速、美国节点）
+# 策略组（按用途分类，共 5 个）
 # ------------------------------------------------------------
 proxy-groups:
-  - name: "🚀 节点选择"
+  # 用途组 1：AI 专用
+  # select 类型 + 手动选一个节点 = 出口固定，不会像 url-test 那样自动跳。
+  # 首次使用请在此组里手动选一个美国节点，之后不要改。
+  - name: "🤖 AI 专用"
+    type: select
+    include-all: true
+    filter: "(?i)(🇺🇸|美国|\\bUS\\b|united.?states|america)"
+
+  # 用途组 2：流媒体
+  # 用 YouTube 探活，按播放体验挑节点；与通用组的 gstatic 测速区分开。
+  - name: "🎬 流媒体"
+    type: url-test
+    include-all: true
+    filter: "(?i)(🇺🇸|美国|\\bUS\\b|united.?states|america)"
+    url: https://www.youtube.com/generate_204
+    interval: 300
+    tolerance: 50
+    lazy: true
+
+  # 用途组 3：通用海外（总入口）
+  # 第一项为美国节点，保持「未知流量走美国」的原意；可随时手动切自动。
+  - name: "🌍 通用海外"
     type: select
     proxies:
-      - "♻️ 自动选择"
       - "🇺🇸 美国节点"
+      - "♻️ 自动选择"
       - DIRECT
 
+  # 工具组 4：自动选择（全节点测速）
   - name: "♻️ 自动选择"
     type: url-test
     include-all: true
-    filter: "^(?!.*(剩余|流量|到期|官网|套餐)).*$"   # regexp2 支持负向前瞻，语法合法
+    filter: "^(?!.*(剩余|流量|到期|官网|套餐)).*$"
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
     lazy: true
 
+  # 工具组 5：美国节点（纯手动）
   - name: "🇺🇸 美国节点"
     type: select
     include-all: true
-    # 【改动3】原 filter 中裸 us 会匹配 Russia / Australia 等；加词边界后只匹配独立 us
     filter: "(?i)(🇺🇸|美国|\\bUS\\b|united.?states|america)"
 
 # ------------------------------------------------------------
@@ -105,7 +110,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/private-domain.mrs
-    proxy: "♻️ 自动选择"          # 【改动6】原为 🚀 节点选择；切 DIRECT 后 GitHub raw 下载会失败
+    proxy: "♻️ 自动选择"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
 
   ads-domain:
@@ -179,7 +184,7 @@ rules:
   - GEOIP,private,DIRECT,no-resolve
   - RULE-SET,private-domain,DIRECT
 
-  # 广告拦截；不希望拦截时删除下一行即可
+  # 广告拦截
   - RULE-SET,ads-domain,REJECT
 
   # 中国区服务保持直连
@@ -187,15 +192,52 @@ rules:
   - RULE-SET,microsoft-cn,DIRECT
   - RULE-SET,steam-cn,DIRECT
 
+  # ---------- 用途 1：AI 专用（固定出口，必须放在 overseas-domain 之前） ----------
+  - DOMAIN-SUFFIX,anthropic.com,🤖 AI 专用
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI 专用
+  - DOMAIN-SUFFIX,claude.com,🤖 AI 专用
+  - DOMAIN-SUFFIX,clau.de,🤖 AI 专用
+  - DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI 专用
+  - DOMAIN-SUFFIX,claudemcpcontent.com,🤖 AI 专用
+  - DOMAIN-SUFFIX,claudemcpclient.com,🤖 AI 专用
+  - DOMAIN-SUFFIX,claude.app,🤖 AI 专用
+  - DOMAIN-SUFFIX,claude.new,🤖 AI 专用
+  - DOMAIN-SUFFIX,claude.site,🤖 AI 专用
+  - DOMAIN-SUFFIX,claudepages.dev,🤖 AI 专用
+  - DOMAIN-SUFFIX,ant.dev,🤖 AI 专用
+  - DOMAIN-SUFFIX,antspace.dev,🤖 AI 专用
+  - DOMAIN,anthropic.auth0.com,🤖 AI 专用
+  - DOMAIN-SUFFIX,hcaptcha.com,🤖 AI 专用
+  - DOMAIN-SUFFIX,arkoselabs.com,🤖 AI 专用
+  - DOMAIN-SUFFIX,openai.com,🤖 AI 专用
+  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI 专用
+  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI 专用
+  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI 专用
+
+  # ---------- 用途 2：流媒体（自动测速，必须放在 overseas-domain 之前） ----------
+  - DOMAIN-SUFFIX,netflix.com,🎬 流媒体
+  - DOMAIN-SUFFIX,nflxvideo.net,🎬 流媒体
+  - DOMAIN-SUFFIX,nflximg.net,🎬 流媒体
+  - DOMAIN-SUFFIX,youtube.com,🎬 流媒体
+  - DOMAIN-SUFFIX,googlevideo.com,🎬 流媒体
+  - DOMAIN-SUFFIX,ytimg.com,🎬 流媒体
+  - DOMAIN-SUFFIX,spotify.com,🎬 流媒体
+  - DOMAIN-SUFFIX,spotifycdn.com,🎬 流媒体
+  - DOMAIN-SUFFIX,scdn.co,🎬 流媒体
+  - DOMAIN-SUFFIX,disneyplus.com,🎬 流媒体
+  - DOMAIN-SUFFIX,disney-plus.net,🎬 流媒体
+  - DOMAIN-SUFFIX,primevideo.com,🎬 流媒体
+  - DOMAIN-SUFFIX,hulu.com,🎬 流媒体
+  - DOMAIN-SUFFIX,twitch.tv,🎬 流媒体
+  - DOMAIN-SUFFIX,twitchcdn.net,🎬 流媒体
+  - DOMAIN-SUFFIX,hbomax.com,🎬 流媒体
+
   # 海外服务优先代理，避免被国内 CDN IP 误判为直连
-  - RULE-SET,overseas-domain,🚀 节点选择
+  - RULE-SET,overseas-domain,🌍 通用海外
 
   # 国内网站与国内 IP 直连
   - RULE-SET,cn-domain,DIRECT
-  # 【改动4】去掉 no-resolve：fake-ip 下带该修饰符会使 IP 规则无法匹配假 IP，
-  #          导致不在 cn-domain 中的国内小众域名漏到 MATCH 被代理
   - RULE-SET,cn-ip,DIRECT
 
-  # 未知目的地默认走美国节点
-  # 【改动5】原为 🚀 节点选择；改成美国组后，主组切 DIRECT 也不影响兜底策略
-  - MATCH,🇺🇸 美国节点
+  # 未知目的地走通用海外组（默认选中 🇺🇸 美国节点）
+  - MATCH,🌍 通用海外
