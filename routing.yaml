@@ -1,12 +1,48 @@
+# Clash Verge Rev / Mihomo 覆写配置
+# 用途：国内直连，海外与未知流量走美国节点；订阅更新后仍保留规则。
+# 使用：在 Clash Verge 的“覆写/合并配置”中导入本文件，不要替换订阅本身。
+
+mode: rule
+unified-delay: true
+tcp-concurrent: true
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "+.lan"
+    - "+.local"
+    - "+.arpa"
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  nameserver-policy:
+    "rule-set:cn-domain":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+  nameserver:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+  respect-rules: true
+
+# 只保留三个可见策略组：手动选择、自动测速、美国节点。
 proxy-groups:
-  - name: 🚀 节点选择
+  - name: "🚀 节点选择"
     type: select
     proxies:
-      - ♻️ 自动选择
-      - 🇺🇸 美国节点
+      - "♻️ 自动选择"
+      - "🇺🇸 美国节点"
       - DIRECT
 
-  - name: ♻️ 自动选择
+  - name: "♻️ 自动选择"
     type: url-test
     include-all: true
     filter: "^(?!.*(?:剩余|流量|到期|官网|套餐)).*$"
@@ -15,7 +51,103 @@ proxy-groups:
     tolerance: 50
     lazy: true
 
-  - name: 🇺🇸 美国节点
+  - name: "🇺🇸 美国节点"
     type: select
     include-all: true
     filter: "(?i)(🇺🇸|美国|us|united.?states|america)"
+
+rule-providers:
+  private-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./ruleset/private-domain.mrs
+    proxy: "🚀 节点选择"
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
+
+  ads-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./ruleset/ads-domain.mrs
+    proxy: "🚀 节点选择"
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
+
+  cn-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./ruleset/cn-domain.mrs
+    proxy: "🚀 节点选择"
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs
+
+  overseas-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./ruleset/overseas-domain.mrs
+    proxy: "🚀 节点选择"
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs
+
+  apple-cn:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./ruleset/apple-cn.mrs
+    proxy: "🚀 节点选择"
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple-cn.mrs
+
+  microsoft-cn:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./ruleset/microsoft-cn.mrs
+    proxy: "🚀 节点选择"
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft%40cn.mrs
+
+  steam-cn:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    path: ./ruleset/steam-cn.mrs
+    proxy: "🚀 节点选择"
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam%40cn.mrs
+
+  cn-ip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    interval: 86400
+    path: ./ruleset/cn-ip.mrs
+    proxy: "🚀 节点选择"
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs
+
+rules:
+  # 局域网、本机、NAS、打印机等
+  - GEOIP,private,DIRECT,no-resolve
+  - RULE-SET,private-domain,DIRECT
+
+  # 广告拦截；不希望拦截时删除下一行即可
+  - RULE-SET,ads-domain,REJECT
+
+  # 中国区服务保持直连
+  - RULE-SET,apple-cn,DIRECT
+  - RULE-SET,microsoft-cn,DIRECT
+  - RULE-SET,steam-cn,DIRECT
+
+  # 海外服务优先代理，避免被国内 CDN IP 误判为直连
+  - RULE-SET,overseas-domain,🚀 节点选择
+
+  # 国内网站与国内 IP 直连
+  - RULE-SET,cn-domain,DIRECT
+  - RULE-SET,cn-ip,DIRECT,no-resolve
+
+  # 未知目的地默认走美国节点
+  - MATCH,🚀 节点选择
