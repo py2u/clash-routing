@@ -1,3 +1,7 @@
+# Clash Verge Rev / Mihomo 覆写配置（按用途分类版）
+# 导入「扩展覆写配置 / Merge」，不要替换订阅本身。
+# 4 组：🤖 AI 专用（固定出口）｜🎬 流媒体（测速）｜🌍 通用海外（总入口）｜♻️ 自动选择（工具）
+
 mode: rule
 ipv6: false
 unified-delay: true
@@ -76,11 +80,13 @@ proxy-groups:
     lazy: true
 
   # 用途组 3：通用海外（总入口）
-  # 第一项为美国节点，保持「未知流量走美国」的原意；可随时手动切自动。
+  # 原「🇺🇸 美国节点」已并入本组：include-all + filter 自动列出全部美国节点，
+  # 默认第一项是美国节点，保持「未知流量走美国」；同时保留自动选择和 DIRECT。
   - name: "🌍 通用海外"
     type: select
+    include-all: true
+    filter: "(?i)(🇺🇸|美国|\\bUS\\b|united.?states|america)"
     proxies:
-      - "🇺🇸 美国节点"
       - "♻️ 自动选择"
       - DIRECT
 
@@ -93,12 +99,6 @@ proxy-groups:
     interval: 300
     tolerance: 50
     lazy: true
-
-  # 工具组 5：美国节点（纯手动）
-  - name: "🇺🇸 美国节点"
-    type: select
-    include-all: true
-    filter: "(?i)(🇺🇸|美国|\\bUS\\b|united.?states|america)"
 
 # ------------------------------------------------------------
 # 规则集订阅
