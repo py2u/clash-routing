@@ -1,6 +1,6 @@
 # Clash Verge Rev / Mihomo 覆写配置（按用途分类版）
 # 导入「扩展覆写配置 / Merge」，不要替换订阅本身。
-# 4 组：🤖 AI 专用（固定出口）｜🎬 流媒体（测速）｜🌍 通用海外（总入口）｜♻️ 自动选择（工具）
+# 3 组：🤖 AI 专用（固定出口）｜🎬 流媒体（YouTube 测速）｜🌍 通用海外（总入口）
 
 mode: rule
 ipv6: false
@@ -57,7 +57,7 @@ sniffer:
     - "+.push.aliyuncs.com"
 
 # ------------------------------------------------------------
-# 策略组（按用途分类，共 4 个；不按地区/节点名筛选）
+# 策略组（按用途分类，共 3 个；不按地区/节点名筛选）
 # ------------------------------------------------------------
 proxy-groups:
   # 用途组 1：AI 专用
@@ -68,35 +68,26 @@ proxy-groups:
     include-all: true
 
   # 用途组 2：流媒体
-  # 用 gstatic 探活：youtube.com/generate_204 在数据中心 IP 上常返回 200/302/429，
-  # Mihomo 默认只认 204，会判成全红。gstatic 端点稳定返回 204。
+  # 以 YouTube 为探活目标，自动挑延迟最低的节点（url-test）。
+  # expected-status 放宽到 200/204/302，避免正常节点被判红；
+  # 若仍全红说明节点侧连不上 youtube.com，把 url 换成 gstatic 即可。
   - name: "🎬 流媒体"
     type: url-test
     include-all: true
-    url: https://www.gstatic.com/generate_204
-    expected-status: 204
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
+    url: https://www.youtube.com/generate_204
+    expected-status: "200/204/302"
     interval: 300
     tolerance: 50
     lazy: true
 
   # 用途组 3：通用海外（总入口）
-  # 列出全部节点，另附自动选择与 DIRECT；未知流量走本组。
+  # 列出全部节点，另附 DIRECT；未知流量走本组，可手动挑节点。
   - name: "🌍 通用海外"
     type: select
     include-all: true
     proxies:
-      - "♻️ 自动选择"
       - DIRECT
-
-  # 工具组 4：自动选择（全节点测速，排除流量警示类节点）
-  - name: "♻️ 自动选择"
-    type: url-test
-    include-all: true
-    filter: "^(?!.*(剩余|流量|到期|官网|套餐)).*$"
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    tolerance: 50
-    lazy: true
 
 # ------------------------------------------------------------
 # 规则集订阅
@@ -108,7 +99,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/private-domain.mrs
-    proxy: "♻️ 自动选择"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
 
   ads-domain:
@@ -117,7 +108,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/ads-domain.mrs
-    proxy: "♻️ 自动选择"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
 
   cn-domain:
@@ -126,7 +117,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/cn-domain.mrs
-    proxy: "♻️ 自动选择"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs
 
   overseas-domain:
@@ -135,7 +126,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/overseas-domain.mrs
-    proxy: "♻️ 自动选择"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs
 
   apple-cn:
@@ -144,7 +135,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/apple-cn.mrs
-    proxy: "♻️ 自动选择"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple-cn.mrs
 
   microsoft-cn:
@@ -153,7 +144,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/microsoft-cn.mrs
-    proxy: "♻️ 自动选择"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft%40cn.mrs
 
   steam-cn:
@@ -162,7 +153,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/steam-cn.mrs
-    proxy: "♻️ 自动选择"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam%40cn.mrs
 
   cn-ip:
@@ -171,7 +162,7 @@ rule-providers:
     format: mrs
     interval: 86400
     path: ./ruleset/cn-ip.mrs
-    proxy: "♻️ 自动选择"
+    proxy: "🎬 流媒体"
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs
 
 # ------------------------------------------------------------
