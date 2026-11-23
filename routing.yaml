@@ -1,6 +1,6 @@
 # Clash Verge Rev / Mihomo 覆写配置（按用途分类版）
 # 导入「扩展覆写配置 / Merge」，不要替换订阅本身。
-# 3 组：🤖 AI 专用（固定出口）｜🎬 流媒体（YouTube 测速）｜🌍 通用海外（总入口）
+# 3 组：🤖 AI 专用｜🎬 流媒体｜🌍 海外
 
 mode: rule
 ipv6: false
@@ -69,9 +69,7 @@ proxy-groups:
 
   # 用途组 2：流媒体
   # 以 YouTube 为探活目标，自动挑延迟最低的节点（url-test）。
-  # expected-status 放宽到 200/204/302，避免正常节点被判红；
-  # 若仍全红说明节点侧连不上 youtube.com，把 url 换成 gstatic 即可。
-  - name: "🎬 流媒体"
+  - name: "🎬 YouTube"
     type: url-test
     include-all: true
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
@@ -81,9 +79,9 @@ proxy-groups:
     tolerance: 50
     lazy: true
 
-  # 用途组 3：通用海外（总入口）
+  # 用途组 3：海外
   # 列出全部节点，另附 DIRECT；未知流量走本组，可手动挑节点。
-  - name: "🌍 通用海外"
+  - name: "🌍 海外"
     type: select
     include-all: true
     proxies:
