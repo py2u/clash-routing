@@ -1,18 +1,7 @@
-# ============================================================
-# 阿尔忒弥斯实验室 · Clash 完美分流 3.0 · 仅美国版
-#
-# 面向 Clash Verge / Mihomo
-# 使用：Clash Verge → 订阅 → 全局扩展覆写配置
-# 将本文件完整粘贴后保存即可。
-#
-# 已移除：香港 / 日本 / 新加坡 / 台湾 / 其他地区
-# ============================================================
+# Clash Verge / Mihomo · 仅美国 · 适中版
+# 订阅 → 全局扩展覆写配置 → 粘贴保存
 
 ipv6: false
-
-# ============================================================
-# TUN
-# ============================================================
 
 tun:
   enable: true
@@ -24,19 +13,12 @@ tun:
     - any:53
     - tcp://any:53
 
-# ============================================================
-# DNS
-# ============================================================
-
 dns:
   enable: true
   listen: 0.0.0.0:1053
   ipv6: false
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  fake-ip-filter-mode: blacklist
-  fake-ip-filter:
-    - '*.lan'
   nameserver:
     - https://doh.pub/dns-query
     - https://dns.alidns.com/dns-query
@@ -46,54 +28,31 @@ dns:
   proxy-server-nameserver:
     - https://doh.pub/dns-query
 
-# ============================================================
-# Rule Providers
-# ============================================================
-
 rule-providers:
-
   ads:
     type: http
     behavior: classical
     format: yaml
     interval: 86400
     url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml"
-
   ai:
     type: http
     behavior: classical
     format: yaml
     interval: 86400
     url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ai.yaml"
-
   youtube:
     type: http
     behavior: classical
     format: yaml
     interval: 86400
     url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/youtube.yaml"
-
-  crypto:
-    type: http
-    behavior: classical
-    format: yaml
-    interval: 86400
-    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml"
-
   disney:
     type: http
     behavior: classical
     format: yaml
     interval: 86400
     url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/disney.yaml"
-
-  apple:
-    type: http
-    behavior: classical
-    format: yaml
-    interval: 86400
-    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml"
-
   google:
     type: http
     behavior: classical
@@ -101,146 +60,59 @@ rule-providers:
     interval: 86400
     url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/google.yaml"
 
-  software:
-    type: http
-    behavior: classical
-    format: yaml
-    interval: 86400
-    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/software.yaml"
-
-# ============================================================
-# Proxy Groups（仅美国）
-# ============================================================
-
 proxy-groups:
-
-  - name: "🚀 默认代理 [自选]"
+  - name: "🚀 默认代理"
     type: select
     proxies:
-      - "🇺🇸 美国节点 [系统]"
-      - "♻️ 自动选择 [系统]"
-      - "🌐 全部节点 [系统]"
+      - "🇺🇸 美国节点"
       - DIRECT
-
-  - name: "🤖 AI服务 [自选]"
+  - name: "🤖 AI服务"
     type: select
     proxies:
-      - "🇺🇸 美国节点 [系统]"
+      - "🇺🇸 美国节点"
       - DIRECT
-
-  - name: "📺 油管专用 [自选]"
+  - name: "📺 油管专用"
     type: select
     proxies:
-      - "🇺🇸 美国节点 [系统]"
+      - "🇺🇸 美国节点"
       - DIRECT
-
-  - name: "🎬 流媒体 [自选]"
+  - name: "🎬 流媒体"
     type: select
     proxies:
-      - "🇺🇸 美国节点 [系统]"
+      - "🇺🇸 美国节点"
       - DIRECT
-
-  - name: "💬 电报专用 [自选]"
+  - name: "💬 电报专用"
     type: select
     proxies:
-      - "🇺🇸 美国节点 [系统]"
+      - "🇺🇸 美国节点"
       - DIRECT
-
-  - name: "Ⓜ️ 微软服务 [自选]"
+  - name: "🔍 谷歌服务"
     type: select
     proxies:
-      - "🇺🇸 美国节点 [系统]"
+      - "🇺🇸 美国节点"
       - DIRECT
-
-  - name: "🍎 苹果服务 [自选]"
-    type: select
-    proxies:
-      - "🇺🇸 美国节点 [系统]"
-      - DIRECT
-
-  - name: "🔍 谷歌服务 [自选]"
-    type: select
-    proxies:
-      - "🇺🇸 美国节点 [系统]"
-      - DIRECT
-
-  - name: "💰 币圈专用 [自选]"
-    type: select
-    proxies:
-      - "🇺🇸 美国节点 [系统]"
-      - DIRECT
-
-  - name: "🖥️ 软件分流 [自选]"
-    type: select
-    proxies:
-      - "🚀 默认代理 [自选]"
-      - "♻️ 自动选择 [系统]"
-      - "🇺🇸 美国节点 [系统]"
-      - DIRECT
-
-  - name: "🌐 全部节点 [系统]"
-    type: select
-    include-all-proxies: true
-    exclude-type: "Direct"
-
-  - name: "♻️ 自动选择 [系统]"
-    type: url-test
-    include-all-proxies: true
-    exclude-filter: "(?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website"
-    exclude-type: "Direct"
-    url: "https://cp.cloudflare.com/generate_204"
-    interval: 300
-    tolerance: 50
-    lazy: true
-
-  - name: "🇺🇸 美国节点 [系统]"
-    type: url-test
-    include-all-proxies: true
-    filter: '(?i)🇺🇸|美国|美|\bUS\b|\bUSA\b|United[ -]?States|America|Los[ -]?Angeles|New[ -]?York|San[ -]?Francisco'
-    exclude-filter: '(?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website'
-    exclude-type: "Direct"
-    url: "https://cp.cloudflare.com/generate_204"
-    interval: 300
-    tolerance: 50
-    lazy: true
-
-  - name: "🛑 广告拦截 [系统]"
+  - name: "🛑 广告拦截"
     type: select
     proxies:
       - REJECT
       - DIRECT
-
-# ============================================================
-# Rules
-# ============================================================
+  - name: "🇺🇸 美国节点"
+    type: url-test
+    include-all-proxies: true
+    url: "https://cp.cloudflare.com/generate_204"
+    interval: 300
+    tolerance: 50
+    lazy: true
 
 rules:
-
-  - "RULE-SET,software,🖥️ 软件分流 [自选]"
-
   - "GEOSITE,private,DIRECT"
-  - "GEOIP,private,DIRECT,no-resolve"
-
-  - "RULE-SET,ads,🛑 广告拦截 [系统]"
-
-  - "RULE-SET,ai,🤖 AI服务 [自选]"
-
-  - "RULE-SET,youtube,📺 油管专用 [自选]"
-
-  - "RULE-SET,crypto,💰 币圈专用 [自选]"
-
-  - "RULE-SET,disney,🎬 流媒体 [自选]"
-  - "GEOSITE,netflix,🎬 流媒体 [自选]"
-
-  - "RULE-SET,apple,🍎 苹果服务 [自选]"
-
-  - "RULE-SET,google,🔍 谷歌服务 [自选]"
-
-  - "GEOSITE,telegram,💬 电报专用 [自选]"
-
-  - "GEOSITE,microsoft,Ⓜ️ 微软服务 [自选]"
-
-  - "GEOSITE,CN,DIRECT"
+  - "RULE-SET,ads,🛑 广告拦截"
+  - "RULE-SET,ai,🤖 AI服务"
+  - "RULE-SET,youtube,📺 油管专用"
+  - "RULE-SET,disney,🎬 流媒体"
+  - "GEOSITE,netflix,🎬 流媒体"
+  - "RULE-SET,google,🔍 谷歌服务"
+  - "GEOSITE,telegram,💬 电报专用"
+  - "GEOSITE,cn,DIRECT"
   - "GEOIP,CN,DIRECT,no-resolve"
-
-  - "MATCH,🚀 默认代理 [自选]"
+  - "MATCH,🚀 默认代理"
