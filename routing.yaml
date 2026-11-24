@@ -1,236 +1,246 @@
-# Clash Verge Rev / Mihomo 覆写配置（按用途分类版）
-# 导入「扩展覆写配置 / Merge」，不要替换订阅本身。
-# 3 组：🤖 AI 专用（固定出口）｜🎬 流媒体（YouTube 测速）｜🌍 通用海外（总入口）
+# ============================================================
+# 阿尔忒弥斯实验室 · Clash 完美分流 3.0 · 仅美国版
+#
+# 面向 Clash Verge / Mihomo
+# 使用：Clash Verge → 订阅 → 全局扩展覆写配置
+# 将本文件完整粘贴后保存即可。
+#
+# 已移除：香港 / 日本 / 新加坡 / 台湾 / 其他地区
+# ============================================================
 
-mode: rule
 ipv6: false
-unified-delay: true
-tcp-concurrent: true
-profile:
-  store-selected: true
-  store-fake-ip: true
 
-# ------------------------------------------------------------
+# ============================================================
+# TUN
+# ============================================================
+
+tun:
+  enable: true
+  stack: mixed
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+
+# ============================================================
 # DNS
-# ------------------------------------------------------------
+# ============================================================
+
 dns:
   enable: true
+  listen: 0.0.0.0:1053
   ipv6: false
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
+  fake-ip-filter-mode: blacklist
   fake-ip-filter:
-    - "+.lan"
-    - "+.local"
-    - "+.arpa"
-    - "+.in-addr.arpa"
-    - "+.msftconnecttest.com"
-    - "+.msftncsi.com"
-    - "localhost"
-    - "+.localdomain"
-  # bootstrap：仅解析 DoH 服务器域名，必须是 IP，直连
+    - '*.lan'
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
   default-nameserver:
     - 223.5.5.5
-    - 119.29.29.29
-  # 节点域名单独用国内 DoH 解析，避免「先连代理才能解析代理」的循环
+    - 223.6.6.6
   proxy-server-nameserver:
-    - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
-  # 国内域名走国内 DoH，加速且防污染
-  nameserver-policy:
-    "rule-set:cn-domain":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
-  # 其余域名（含 DNS 泄漏测试站）走境外 DoH；respect-rules 下经代理出口
-  nameserver:
-    - https://cloudflare-dns.com/dns-query
-    - https://dns.google/dns-query
-  respect-rules: true
 
-# ------------------------------------------------------------
-# 域名嗅探
-# ------------------------------------------------------------
-sniffer:
-  enable: true
-  sniff:
-    TLS:
-      ports: [443, 8443]
-    HTTP:
-      ports: [80, 8080-8880]
-  skip-domain:
-    - "+.push.taobao.com"
-    - "+.push.aliyuncs.com"
+# ============================================================
+# Rule Providers
+# ============================================================
 
-# ------------------------------------------------------------
-# 策略组（按用途分类，共 3 个；不按地区/节点名筛选）
-# ------------------------------------------------------------
+rule-providers:
+
+  ads:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml"
+
+  ai:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ai.yaml"
+
+  youtube:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/youtube.yaml"
+
+  crypto:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml"
+
+  disney:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/disney.yaml"
+
+  apple:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml"
+
+  google:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/google.yaml"
+
+  software:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/software.yaml"
+
+# ============================================================
+# Proxy Groups（仅美国）
+# ============================================================
+
 proxy-groups:
-  # 用途组 1：AI 专用
-  # select 类型 + 手动选一个节点 = 出口固定，不会像 url-test 那样自动跳。
-  # 首次使用请在此组里手动选一个节点，之后不要改。
-  - name: "🤖 AI 专用"
-    type: select
-    include-all: true
 
-  # 用途组 2：流媒体
-  # 以 YouTube 为探活目标，自动挑延迟最低的节点（url-test）。
-  # expected-status 放宽到 200/204/302，避免正常节点被判红；
-  # 若仍全红说明节点侧连不上 youtube.com，把 url 换成 gstatic 即可。
-  - name: "🎬 流媒体"
+  - name: "🚀 默认代理 [自选]"
+    type: select
+    proxies:
+      - "🇺🇸 美国节点 [系统]"
+      - "♻️ 自动选择 [系统]"
+      - "🌐 全部节点 [系统]"
+      - DIRECT
+
+  - name: "🤖 AI服务 [自选]"
+    type: select
+    proxies:
+      - "🇺🇸 美国节点 [系统]"
+      - DIRECT
+
+  - name: "📺 油管专用 [自选]"
+    type: select
+    proxies:
+      - "🇺🇸 美国节点 [系统]"
+      - DIRECT
+
+  - name: "🎬 流媒体 [自选]"
+    type: select
+    proxies:
+      - "🇺🇸 美国节点 [系统]"
+      - DIRECT
+
+  - name: "💬 电报专用 [自选]"
+    type: select
+    proxies:
+      - "🇺🇸 美国节点 [系统]"
+      - DIRECT
+
+  - name: "Ⓜ️ 微软服务 [自选]"
+    type: select
+    proxies:
+      - "🇺🇸 美国节点 [系统]"
+      - DIRECT
+
+  - name: "🍎 苹果服务 [自选]"
+    type: select
+    proxies:
+      - "🇺🇸 美国节点 [系统]"
+      - DIRECT
+
+  - name: "🔍 谷歌服务 [自选]"
+    type: select
+    proxies:
+      - "🇺🇸 美国节点 [系统]"
+      - DIRECT
+
+  - name: "💰 币圈专用 [自选]"
+    type: select
+    proxies:
+      - "🇺🇸 美国节点 [系统]"
+      - DIRECT
+
+  - name: "🖥️ 软件分流 [自选]"
+    type: select
+    proxies:
+      - "🚀 默认代理 [自选]"
+      - "♻️ 自动选择 [系统]"
+      - "🇺🇸 美国节点 [系统]"
+      - DIRECT
+
+  - name: "🌐 全部节点 [系统]"
+    type: select
+    include-all-proxies: true
+    exclude-type: "Direct"
+
+  - name: "♻️ 自动选择 [系统]"
     type: url-test
-    include-all: true
-    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
-    url: https://www.youtube.com/generate_204
-    expected-status: "200/204/302"
+    include-all-proxies: true
+    exclude-filter: "(?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website"
+    exclude-type: "Direct"
+    url: "https://cp.cloudflare.com/generate_204"
     interval: 300
     tolerance: 50
     lazy: true
 
-  # 用途组 3：通用海外（总入口）
-  # 列出全部节点，另附 DIRECT；未知流量走本组，可手动挑节点。
-  - name: "🌍 通用海外"
+  - name: "🇺🇸 美国节点 [系统]"
+    type: url-test
+    include-all-proxies: true
+    filter: '(?i)🇺🇸|美国|美|\bUS\b|\bUSA\b|United[ -]?States|America|Los[ -]?Angeles|New[ -]?York|San[ -]?Francisco'
+    exclude-filter: '(?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website'
+    exclude-type: "Direct"
+    url: "https://cp.cloudflare.com/generate_204"
+    interval: 300
+    tolerance: 50
+    lazy: true
+
+  - name: "🛑 广告拦截 [系统]"
     type: select
-    include-all: true
     proxies:
+      - REJECT
       - DIRECT
 
-# ------------------------------------------------------------
-# 规则集订阅
-# ------------------------------------------------------------
-rule-providers:
-  private-domain:
-    type: http
-    behavior: domain
-    format: mrs
-    interval: 86400
-    path: ./ruleset/private-domain.mrs
-    proxy: "🎬 流媒体"
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
+# ============================================================
+# Rules
+# ============================================================
 
-  ads-domain:
-    type: http
-    behavior: domain
-    format: mrs
-    interval: 86400
-    path: ./ruleset/ads-domain.mrs
-    proxy: "🎬 流媒体"
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
-
-  cn-domain:
-    type: http
-    behavior: domain
-    format: mrs
-    interval: 86400
-    path: ./ruleset/cn-domain.mrs
-    proxy: "🎬 流媒体"
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs
-
-  overseas-domain:
-    type: http
-    behavior: domain
-    format: mrs
-    interval: 86400
-    path: ./ruleset/overseas-domain.mrs
-    proxy: "🎬 流媒体"
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs
-
-  apple-cn:
-    type: http
-    behavior: domain
-    format: mrs
-    interval: 86400
-    path: ./ruleset/apple-cn.mrs
-    proxy: "🎬 流媒体"
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple-cn.mrs
-
-  microsoft-cn:
-    type: http
-    behavior: domain
-    format: mrs
-    interval: 86400
-    path: ./ruleset/microsoft-cn.mrs
-    proxy: "🎬 流媒体"
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft%40cn.mrs
-
-  steam-cn:
-    type: http
-    behavior: domain
-    format: mrs
-    interval: 86400
-    path: ./ruleset/steam-cn.mrs
-    proxy: "🎬 流媒体"
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam%40cn.mrs
-
-  cn-ip:
-    type: http
-    behavior: ipcidr
-    format: mrs
-    interval: 86400
-    path: ./ruleset/cn-ip.mrs
-    proxy: "🎬 流媒体"
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs
-
-# ------------------------------------------------------------
-# 分流规则（自上而下，首条命中生效）
-# ------------------------------------------------------------
 rules:
-  # 局域网、本机、NAS、打印机等
-  - GEOIP,private,DIRECT,no-resolve
-  - RULE-SET,private-domain,DIRECT
 
-  # 广告拦截
-  - RULE-SET,ads-domain,REJECT
+  - "RULE-SET,software,🖥️ 软件分流 [自选]"
 
-  # 中国区服务保持直连
-  - RULE-SET,apple-cn,DIRECT
-  - RULE-SET,microsoft-cn,DIRECT
-  - RULE-SET,steam-cn,DIRECT
+  - "GEOSITE,private,DIRECT"
+  - "GEOIP,private,DIRECT,no-resolve"
 
-  # ---------- 用途 1：AI 专用（固定出口，必须放在 overseas-domain 之前） ----------
-  - DOMAIN-SUFFIX,anthropic.com,🤖 AI 专用
-  - DOMAIN-SUFFIX,claude.ai,🤖 AI 专用
-  - DOMAIN-SUFFIX,claude.com,🤖 AI 专用
-  - DOMAIN-SUFFIX,clau.de,🤖 AI 专用
-  - DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI 专用
-  - DOMAIN-SUFFIX,claudemcpcontent.com,🤖 AI 专用
-  - DOMAIN-SUFFIX,claudemcpclient.com,🤖 AI 专用
-  - DOMAIN-SUFFIX,claude.app,🤖 AI 专用
-  - DOMAIN-SUFFIX,claude.new,🤖 AI 专用
-  - DOMAIN-SUFFIX,claude.site,🤖 AI 专用
-  - DOMAIN-SUFFIX,claudepages.dev,🤖 AI 专用
-  - DOMAIN-SUFFIX,ant.dev,🤖 AI 专用
-  - DOMAIN-SUFFIX,antspace.dev,🤖 AI 专用
-  - DOMAIN,anthropic.auth0.com,🤖 AI 专用
-  - DOMAIN-SUFFIX,hcaptcha.com,🤖 AI 专用
-  - DOMAIN-SUFFIX,arkoselabs.com,🤖 AI 专用
-  - DOMAIN-SUFFIX,openai.com,🤖 AI 专用
-  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI 专用
-  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI 专用
-  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI 专用
+  - "RULE-SET,ads,🛑 广告拦截 [系统]"
 
-  # ---------- 用途 2：流媒体（自动测速，必须放在 overseas-domain 之前） ----------
-  - DOMAIN-SUFFIX,netflix.com,🎬 流媒体
-  - DOMAIN-SUFFIX,nflxvideo.net,🎬 流媒体
-  - DOMAIN-SUFFIX,nflximg.net,🎬 流媒体
-  - DOMAIN-SUFFIX,youtube.com,🎬 流媒体
-  - DOMAIN-SUFFIX,googlevideo.com,🎬 流媒体
-  - DOMAIN-SUFFIX,ytimg.com,🎬 流媒体
-  - DOMAIN-SUFFIX,spotify.com,🎬 流媒体
-  - DOMAIN-SUFFIX,spotifycdn.com,🎬 流媒体
-  - DOMAIN-SUFFIX,scdn.co,🎬 流媒体
-  - DOMAIN-SUFFIX,disneyplus.com,🎬 流媒体
-  - DOMAIN-SUFFIX,disney-plus.net,🎬 流媒体
-  - DOMAIN-SUFFIX,primevideo.com,🎬 流媒体
-  - DOMAIN-SUFFIX,hulu.com,🎬 流媒体
-  - DOMAIN-SUFFIX,twitch.tv,🎬 流媒体
-  - DOMAIN-SUFFIX,twitchcdn.net,🎬 流媒体
-  - DOMAIN-SUFFIX,hbomax.com,🎬 流媒体
+  - "RULE-SET,ai,🤖 AI服务 [自选]"
 
-  # 海外服务优先代理，避免被国内 CDN IP 误判为直连
-  - RULE-SET,overseas-domain,🌍 通用海外
+  - "RULE-SET,youtube,📺 油管专用 [自选]"
 
-  # 国内网站与国内 IP 直连
-  - RULE-SET,cn-domain,DIRECT
-  - RULE-SET,cn-ip,DIRECT
+  - "RULE-SET,crypto,💰 币圈专用 [自选]"
 
-  # 未知目的地走通用海外组
-  - MATCH,🌍 通用海外
+  - "RULE-SET,disney,🎬 流媒体 [自选]"
+  - "GEOSITE,netflix,🎬 流媒体 [自选]"
+
+  - "RULE-SET,apple,🍎 苹果服务 [自选]"
+
+  - "RULE-SET,google,🔍 谷歌服务 [自选]"
+
+  - "GEOSITE,telegram,💬 电报专用 [自选]"
+
+  - "GEOSITE,microsoft,Ⓜ️ 微软服务 [自选]"
+
+  - "GEOSITE,CN,DIRECT"
+  - "GEOIP,CN,DIRECT,no-resolve"
+
+  - "MATCH,🚀 默认代理 [自选]"
