@@ -1,6 +1,8 @@
-# Clash Verge / Mihomo · 仅美国 · 适中版
+# Clash Verge / Mihomo 
 # 订阅 → 全局扩展覆写配置 → 粘贴保存
+
 ipv6: false
+
 tun:
   enable: true
   stack: mixed
@@ -10,6 +12,7 @@ tun:
   dns-hijack:
     - any:53
     - tcp://any:53
+
 dns:
   enable: true
   listen: 0.0.0.0:1053
@@ -24,6 +27,7 @@ dns:
     - 223.6.6.6
   proxy-server-nameserver:
     - https://doh.pub/dns-query
+
 rule-providers:
   ads:
     type: http
@@ -49,12 +53,7 @@ rule-providers:
     format: yaml
     interval: 86400
     url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/disney.yaml"
-  google:
-    type: http
-    behavior: classical
-    format: yaml
-    interval: 86400
-    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/google.yaml"
+
 proxy-groups:
   - name: "🚀 默认代理"
     type: select
@@ -81,11 +80,6 @@ proxy-groups:
     proxies:
       - "🇺🇸 美国节点"
       - DIRECT
-  - name: "🔍 谷歌服务"
-    type: select
-    proxies:
-      - "🇺🇸 美国节点"
-      - DIRECT
   - name: "🛑 广告拦截"
     type: select
     proxies:
@@ -98,6 +92,7 @@ proxy-groups:
     interval: 300
     tolerance: 50
     lazy: true
+
 rules:
   - "GEOSITE,private,DIRECT"
   - "RULE-SET,ads,🛑 广告拦截"
@@ -105,7 +100,6 @@ rules:
   - "RULE-SET,youtube,📺 油管专用"
   - "RULE-SET,disney,🎬 流媒体"
   - "GEOSITE,netflix,🎬 流媒体"
-  - "RULE-SET,google,🔍 谷歌服务"
   - "GEOSITE,telegram,💬 电报专用"
   - "DOMAIN-SUFFIX,net.coffee,🚀 默认代理"
   - "GEOSITE,cn,DIRECT"
