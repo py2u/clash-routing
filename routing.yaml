@@ -1,7 +1,6 @@
 # ============================================================
 # Clash Verge Rev / Mihomo 全局扩展覆写配置
-# 适配：美国多协议节点（AI 固定防切换 + 油管/电报自动测速最快）
-# 路径：订阅 → 全局扩展覆写配置 → 粘贴保存
+# 路径：订阅 → 全局扩展覆写配置 → 粘贴保存 → 重新点击当前订阅
 # ============================================================
 
 # ------------------------------------------------------------
@@ -25,25 +24,7 @@ profile:
   store-fake-ip: true
 
 # ------------------------------------------------------------
-# 2. 复用模板（YAML 锚点）
-# ------------------------------------------------------------
-x-anchors:
-  rule-classical: &rule_classical
-    type: http
-    behavior: classical
-    format: yaml
-    interval: 86400
-    proxy: "🚀 默认代理"
-
-  url-test-base: &url_test_base
-    type: url-test
-    include-all-proxies: true
-    interval: 300
-    tolerance: 30
-    lazy: true
-
-# ------------------------------------------------------------
-# 3. TUN 虚拟网卡
+# 2. TUN 虚拟网卡
 # ------------------------------------------------------------
 tun:
   enable: true
@@ -57,7 +38,7 @@ tun:
     - tcp://any:53
 
 # ------------------------------------------------------------
-# 4. DNS 解析
+# 3. DNS 解析
 # ------------------------------------------------------------
 dns:
   enable: true
@@ -73,15 +54,19 @@ dns:
   default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
-  proxy-server-nameserver: &cn_doh
+  proxy-server-nameserver:
     - https://223.5.5.5/dns-query
     - https://1.12.12.12/dns-query
-  direct-nameserver: *cn_doh
+  direct-nameserver:
+    - https://223.5.5.5/dns-query
+    - https://1.12.12.12/dns-query
   nameserver:
     - https://1.1.1.1/dns-query
     - https://8.8.8.8/dns-query
   nameserver-policy:
-    "geosite:cn,private": *cn_doh
+    "geosite:cn,private":
+      - https://223.5.5.5/dns-query
+      - https://1.12.12.12/dns-query
   fake-ip-filter:
     - "geosite:private"
     - "geosite:connectivity-check"
@@ -98,7 +83,7 @@ dns:
     - "+.msftncsi.com"
 
 # ------------------------------------------------------------
-# 5. 流量嗅探
+# 4. 流量嗅探
 # ------------------------------------------------------------
 sniffer:
   enable: true
@@ -121,16 +106,14 @@ sniffer:
     - "+.local"
 
 # ------------------------------------------------------------
-# 6. 策略组
+# 5. 策略组
 # ------------------------------------------------------------
 proxy-groups:
-  # 应用分流组
   - name: "🚀 默认代理"
     type: select
     include-all-proxies: true
-    proxies: &general_proxies
+    proxies:
       - "🇺🇸 美国最快"
-      - "📺 油管最快"
       - DIRECT
 
   - name: "🤖 AI服务"
@@ -141,23 +124,30 @@ proxy-groups:
       - "🇺🇸 美国最快"
       - DIRECT
 
+  # 油管 / 流媒体 / 电报：直接包含全部 5 个节点，自动测速选最快
   - name: "📺 油管专用"
-    type: select
+    type: url-test
     include-all-proxies: true
-    proxies: &streaming_proxies
-      - "📺 油管最快"
-      - "🇺🇸 美国最快"
-      - DIRECT
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 30
+    lazy: true
 
   - name: "🎬 流媒体"
-    type: select
+    type: url-test
     include-all-proxies: true
-    proxies: *streaming_proxies
+    url: https://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 30
+    lazy: true
 
   - name: "💬 电报专用"
-    type: select
+    type: url-test
     include-all-proxies: true
-    proxies: *general_proxies
+    url: https://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 30
+    lazy: true
 
   - name: "🛑 广告拦截"
     type: select
@@ -166,7 +156,6 @@ proxy-groups:
       - REJECT
       - DIRECT
 
-  # 节点调度组（AI 固定故障转移 + 通用/油管自动测速）
   - name: "🛡️ AI固定"
     type: fallback
     include-all-proxies: true
@@ -176,68 +165,69 @@ proxy-groups:
     lazy: true
 
   - name: "🇺🇸 美国最快"
-    <<: *url_test_base
+    type: url-test
+    include-all-proxies: true
     url: https://cp.cloudflare.com/generate_204
-
-  - name: "📺 油管最快"
-    <<: *url_test_base
-    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 30
+    lazy: true
 
 # ------------------------------------------------------------
-# 7. 规则集
+# 6. 规则集
 # ------------------------------------------------------------
 rule-providers:
   ads:
-    <<: *rule_classical
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    proxy: "🚀 默认代理"
     path: ./ruleset/ads.yaml
     url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml"
 
   ai:
-    <<: *rule_classical
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    proxy: "🚀 默认代理"
     path: ./ruleset/ai.yaml
     url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ai.yaml"
 
   youtube:
-    <<: *rule_classical
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    proxy: "🚀 默认代理"
     path: ./ruleset/youtube.yaml
     url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/youtube.yaml"
 
   disney:
-    <<: *rule_classical
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    proxy: "🚀 默认代理"
     path: ./ruleset/disney.yaml
     url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/disney.yaml"
 
 # ------------------------------------------------------------
-# 8. 分流规则（自上而下依次匹配）
+# 7. 分流规则
 # ------------------------------------------------------------
 rules:
-  # 私有网络与内网直连
   - GEOSITE,private,DIRECT
   - GEOIP,private,DIRECT,no-resolve
-
-  # 广告拦截
   - RULE-SET,ads,🛑 广告拦截
-
-  # 拦截油管 QUIC（UDP 443），强制回退 TCP 提升稳定性
   - AND,((NETWORK,UDP),(DST-PORT,443),(RULE-SET,youtube)),REJECT-DROP
-
-  # 应用与流媒体分流
   - RULE-SET,ai,🤖 AI服务
   - RULE-SET,youtube,📺 油管专用
   - RULE-SET,disney,🎬 流媒体
   - GEOSITE,netflix,🎬 流媒体
   - GEOSITE,telegram,💬 电报专用
   - GEOIP,telegram,💬 电报专用,no-resolve
-
-  # 自定义规则
   - DOMAIN-SUFFIX,net.coffee,🚀 默认代理
-
-  # 常见海外域名优先走 Fake-IP，避免后续 GEOIP 触发多余查询
   - GEOSITE,geolocation-!cn,🚀 默认代理
-
-  # 国内直连（冷门国内站由 GEOIP 兜底直连）
   - GEOSITE,cn,DIRECT
   - GEOIP,cn,DIRECT
-
-  # 兜底规则
   - MATCH,🚀 默认代理
